@@ -47,9 +47,3 @@ def unet_model(input_shape):
 
     return Model(inputs, outputs, name="Custom_U-Net")
 
-if __name__ == "__main__":
-    input_shape = (512, 512, 3)
-    
-    model = unet_model(input_shape)
-    
-    model.summary()
