@@ -11,7 +11,7 @@ A critical parameter that can dramatically affect whether training
 succeeds or fails. The value for this depends significantly on which
 optimizer is used. Refer to the default learning rate parameter
 """
-learning_rate = 1e-3
+learning_rate = 1e-4
 
 
 """
