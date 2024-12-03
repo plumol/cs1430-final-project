@@ -7,11 +7,14 @@ def iou_loss(y_true, y_pred):
     epsilon = 1e-7
     intersection = tf.reduce_sum(y_true * y_pred, axis=[1, 2, 3])
     union = tf.reduce_sum(y_true + y_pred, axis=[1, 2, 3]) - intersection
-    return 1 - (intersection + epsilon) / (union + epsilon)
+    iou = (intersection + epsilon) / (union + epsilon)
+    iou_loss = 1 - iou
+    # Average IoU loss across the batch
+    return tf.reduce_mean(iou_loss)
 
 # Combined loss: binary_crossentropy + IoU loss
 def combined_loss(y_true, y_pred):
-    bce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
+    bce =  tf.reduce_mean(tf.keras.losses.binary_crossentropy(y_true, y_pred))
     iou = iou_loss(y_true, y_pred)
     return bce + iou  
 
@@ -21,7 +24,7 @@ def train_model(model, train_dataset, val_dataset, epochs=hp.num_epochs, batch_s
             "best_model.h5", save_best_only=True, monitor="val_loss", mode="min"
         ),
         tf.keras.callbacks.EarlyStopping(
-            monitor="val_loss", patience=10, restore_best_weights=True
+            monitor="val_loss", patience=20, restore_best_weights=True
         ),
         # decrease learning rate if loss stop reducing
         tf.keras.callbacks.ReduceLROnPlateau(
