@@ -30,6 +30,6 @@ model.summary()
 # training model
 train_model(model, train_dataset, val_dataset, epochs=hp.num_epochs, batch_size= hp.batch_size)
 
-# 加载最佳权重并评估
+# evaluate
 model.load_weights("best_model.h5")
 evaluate_model(model, val_dataset)
