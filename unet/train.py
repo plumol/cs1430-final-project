@@ -1,6 +1,20 @@
 import tensorflow as tf
 import hyperparameters as hp
 
+
+# IoU Loss
+def iou_loss(y_true, y_pred):
+    epsilon = 1e-7
+    intersection = tf.reduce_sum(y_true * y_pred, axis=[1, 2, 3])
+    union = tf.reduce_sum(y_true + y_pred, axis=[1, 2, 3]) - intersection
+    return 1 - (intersection + epsilon) / (union + epsilon)
+
+# Combined loss: binary_crossentropy + IoU loss
+def combined_loss(y_true, y_pred):
+    bce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
+    iou = iou_loss(y_true, y_pred)
+    return bce + iou  
+
 def train_model(model, train_dataset, val_dataset, epochs=hp.num_epochs, batch_size=hp.batch_size):
     callbacks = [
         tf.keras.callbacks.ModelCheckpoint(
@@ -17,7 +31,7 @@ def train_model(model, train_dataset, val_dataset, epochs=hp.num_epochs, batch_s
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=hp.learning_rate),
-        loss="binary_crossentropy",
+        loss= combined_loss,
         metrics=["accuracy", tf.keras.metrics.MeanIoU(num_classes=2)]
     )
 
