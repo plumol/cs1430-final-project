@@ -2,14 +2,26 @@ import numpy as np
 import cv2
 from ultralytics import YOLO
 import argparse
+import time
 from unet.videoprocess import preprocess_frame
+
+def calculate_fps(start_time, frame_count):
+    current_time = time.time()
+    fps = frame_count / (current_time - start_time)
+    return fps
 
 def display_webcam():
     cam = cv2.VideoCapture(0)
-
+    print(cv2.VideoCapture().getBackendName())
+    if cam.isOpened():
+        print("Camera loaded successfully!")
+    else:
+        print("Failed to load camera.")
     while True:
         ret, frame = cam.read()
-
+        if not ret:
+            print("无法捕获帧。")
+            break
         cv2.imshow('Camera', frame)
 
         if cv2.waitKey(1) == ord('q'):
@@ -45,17 +57,23 @@ def yolo_webcam():
 
 def unet_webcam():
     cam = cv2.VideoCapture(0)
+    frame_count = 0
+    start_time = time.time()
     while True:
         ret, frame = cam.read()
         # get mask from unet model
         mask_resized = preprocess_frame(frame)
 
         # apply mask
-        frame_black_background = frame.copy()
-        frame_black_background[mask_resized == 0] = 0  # black background
+        frame[mask_resized == 0] = 0  # black background
 
         # show result
-        cv2.imshow("U-Net Processed Camera", frame_black_background)
+        cv2.imshow("U-Net Processed Camera", frame)
+
+        # show frame per second
+        frame_count += 1
+        fps = calculate_fps(start_time, frame_count)
+        print(f"FPS: {fps:.2f}")
 
         # press q to quit
         if cv2.waitKey(1) == ord('q'):
