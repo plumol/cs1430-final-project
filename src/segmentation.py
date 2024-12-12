@@ -12,16 +12,8 @@ def calculate_fps(start_time, frame_count):
 
 def display_webcam():
     cam = cv2.VideoCapture(0)
-    print(cv2.VideoCapture().getBackendName())
-    if cam.isOpened():
-        print("Camera loaded successfully!")
-    else:
-        print("Failed to load camera.")
     while True:
         ret, frame = cam.read()
-        if not ret:
-            print("无法捕获帧。")
-            break
         cv2.imshow('Camera', frame)
 
         if cv2.waitKey(1) == ord('q'):
