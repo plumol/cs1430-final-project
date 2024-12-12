@@ -38,7 +38,7 @@ def predict_and_save(model_path, image_folder, output_folder):
 
 if __name__ == "__main__":
     model_path = "best_model.h5"
-    image_folder = "../data/images/"
+    image_folder = "../../data/images/"
     output_folder = "./predict/"
 
     predict_and_save(model_path, image_folder, output_folder)

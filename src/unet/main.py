@@ -4,8 +4,8 @@ from train import train_model
 from evaluate import evaluate_model
 import hyperparameters as hp
 
-image_dir = "../data/images"
-mask_dir = "../data/masks"
+image_dir = "../../data/images"
+mask_dir = "../../data/masks"
 
 # load data
 image_paths, mask_paths = get_image_mask_paths(image_dir, mask_dir)

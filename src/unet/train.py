@@ -1,5 +1,5 @@
 import tensorflow as tf
-import hyperparameters as hp
+from hyperparameters import num_epochs, batch_size,learning_rate
 
 
 # IoU Loss
@@ -18,7 +18,7 @@ def combined_loss(y_true, y_pred):
     iou = iou_loss(y_true, y_pred)
     return bce + iou  
 
-def train_model(model, train_dataset, val_dataset, epochs=hp.num_epochs, batch_size=hp.batch_size):
+def train_model(model, train_dataset, val_dataset, epochs=num_epochs, batch_size=batch_size):
     callbacks = [
         tf.keras.callbacks.ModelCheckpoint(
             "best_model.h5", save_best_only=True, monitor="val_loss", mode="min"
@@ -33,7 +33,7 @@ def train_model(model, train_dataset, val_dataset, epochs=hp.num_epochs, batch_s
     ]
 
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=hp.learning_rate),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
         loss= combined_loss,
         metrics=["accuracy", tf.keras.metrics.BinaryIoU(target_class_ids=[0, 1], threshold=0.5)]
     )

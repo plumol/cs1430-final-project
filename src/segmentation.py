@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from ultralytics import YOLO
 import argparse
-
+from unet.videoprocess import preprocess_frame
 
 def display_webcam():
     cam = cv2.VideoCapture(0)
@@ -43,12 +43,34 @@ def yolo_webcam():
     cam.release()
     cv2.destroyAllWindows()
 
+def unet_webcam():
+    cam = cv2.VideoCapture(0)
+    while True:
+        ret, frame = cam.read()
+        # get mask from unet model
+        mask_resized = preprocess_frame(frame)
+
+        # apply mask
+        frame_black_background = frame.copy()
+        frame_black_background[mask_resized == 0] = 0  # black background
+
+        # show result
+        cv2.imshow("U-Net Processed Camera", frame_black_background)
+
+        # press q to quit
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    cam.release()
+    cv2.destroyAllWindows()
 
 def main(args):
     if args.model == 'none':
         display_webcam()
     elif args.model == 'yolo':
         yolo_webcam()
+    elif args.model == 'unet':
+        unet_webcam()
     pass
 
 
