@@ -35,7 +35,7 @@ def train_model(model, train_dataset, val_dataset, epochs=hp.num_epochs, batch_s
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=hp.learning_rate),
         loss= combined_loss,
-        metrics=["accuracy", tf.keras.metrics.MeanIoU(num_classes=2)]
+        metrics=["accuracy", tf.keras.metrics.BinaryIoU(target_class_ids=[0, 1], threshold=0.5)]
     )
 
     history = model.fit(

@@ -28,19 +28,19 @@ def unet_model(input_shape):
     inputs = Input(shape=input_shape)
 
     # encoding
-    enc1, pool1 = encoder_module(inputs, 32)
-    enc2, pool2 = encoder_module(pool1, 64)
-    enc3, pool3 = encoder_module(pool2, 128)
-    enc4, pool4 = encoder_module(pool3, 256)
+    enc1, pool1 = encoder_module(inputs, 64)
+    enc2, pool2 = encoder_module(pool1, 128)
+    enc3, pool3 = encoder_module(pool2, 256)
+    enc4, pool4 = encoder_module(pool3, 512)
 
     #Bridge
-    bottleneck = double_conv_layer(pool4, 512)
+    bottleneck = double_conv_layer(pool4, 1024)
 
     # decoding
-    dec4 = decoder_module(bottleneck, enc4, 256)
-    dec3 = decoder_module(dec4, enc3, 128)
-    dec2 = decoder_module(dec3, enc2, 64)
-    dec1 = decoder_module(dec2, enc1, 32)
+    dec4 = decoder_module(bottleneck, enc4, 512)
+    dec3 = decoder_module(dec4, enc3, 256)
+    dec2 = decoder_module(dec3, enc2, 128)
+    dec1 = decoder_module(dec2, enc1, 64)
 
     # output
     outputs = Conv2D(1, kernel_size=1, activation="sigmoid", padding="same")(dec1)
