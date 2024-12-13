@@ -51,15 +51,24 @@ def unet_webcam():
     cam = cv2.VideoCapture(0)
     frame_count = 0
     start_time = time.time()
+
+    skip_frames = 3  
+    #cache the mask
+    mask_resized = None  
     while True:
         ret, frame = cam.read()
-        # get mask from unet model
-        mask_resized = preprocess_frame(frame)
+        if not ret:
+            break
 
-        # apply mask
-        frame[mask_resized == 0] = 0  # black background
+        if frame_count % skip_frames == 0:
+            # recaculate mask after skip_frames 
+            mask_resized = preprocess_frame(frame)
 
-        # show result
+         # apply changing mask
+        if mask_resized is not None:
+            frame[mask_resized == 0] = 0  
+
+         # show result
         cv2.imshow("U-Net Processed Camera", frame)
 
         # show frame per second
