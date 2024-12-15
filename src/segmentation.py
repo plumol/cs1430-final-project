@@ -80,7 +80,7 @@ def unet_webcam():
         if mask_resized is not None:
             frame[mask_resized == 0] = 0  
             background = back_image.copy()
-            background[mask_resized >= 0.3] = 0
+            background[mask_resized == 1] = 0
          # show result
         cv2.imshow("U-Net Processed Camera", frame + background)
 
