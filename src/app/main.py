@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(np.ndarray)
     def updateFrame(self, frame):
-        frame = frame.astype(np.uint8)[:, ::-1, :]
+        frame = cv2.resize(frame.astype(np.uint8)[:, ::-1, :], (self.video_width, self.video_height))
 
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         h, w, ch = rgb_frame.shape
