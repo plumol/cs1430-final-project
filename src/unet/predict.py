@@ -3,7 +3,7 @@ import hyperparameters as hp
 import os
 import numpy as np
 import cv2
-from data_loader import read_image  
+from data_loader import load_and_preprocess_image  
 
 def predict_and_save(model_path, image_folder, output_folder):
     # load best model
@@ -18,7 +18,7 @@ def predict_and_save(model_path, image_folder, output_folder):
 
     for image_path in image_paths:
         # preprocess
-        image = read_image(image_path) 
+        image = load_and_preprocess_image(image_path) 
 
         # Shape: (1, 256, 256, 3)
         image_batch = np.expand_dims(image, axis=0)  

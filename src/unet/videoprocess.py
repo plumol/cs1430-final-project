@@ -5,7 +5,6 @@ import os
 from keras.models import load_model
 import tensorflow.lite as tflite
 from .hyperparameters import img_size
-
 def iou_loss(y_true, y_pred):
     epsilon = 1e-7
     intersection = tf.reduce_sum(y_true * y_pred, axis=[1, 2, 3])
@@ -24,19 +23,25 @@ def combined_loss(y_true, y_pred):
 
 # save TFLite model
 if not os.path.exists("unet_model.tflite"):
-    model = load_model("best_model.h5", custom_objects={
+    model = load_model("./unet/best_model.h5", custom_objects={
     "iou_loss": iou_loss,
     "combined_loss": combined_loss
     })
     # transfer to TFLite format
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    # Enable the GPU delegate
+    converter.target_spec.supported_ops = [
+    tf.lite.OpsSet.TFLITE_BUILTINS,
+    tf.lite.OpsSet.SELECT_TF_OPS
+    ]
     tflite_model = converter.convert()
     with open("unet_model.tflite", "wb") as f:
         f.write(tflite_model)
-#experimental_delegates = [tf.lite.experimental.load_delegate('libOpenCL.so')]
+#experimental_delegates = [tf.lite.experimental.load_delegate('libmetal_plugin.dylib')]
 interpreter = tflite.Interpreter(model_path="unet_model.tflite", 
-                                num_threads=4)
+                                num_threads=7)
+                                #experimental_delegates = experimental_delegates)
 interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
